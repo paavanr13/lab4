@@ -1,0 +1,41 @@
+#include <stdint.h>
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
+int main() {
+  struct header {
+    uint64_t size;
+    struct header *next;
+  };
+
+  // get 256 more bytes of memory
+  void *new_memory = sbrk(256);
+
+  // put the first block at the start of the new memory
+  struct header *block_1 = (struct header *)new_memory;
+  block_1->size = 128;
+  // set block to 0s
+  char *start_1 = (char *)(block_1 + 1); // move past header
+  memset(start_1, 0,
+         block_1->size -
+             sizeof(struct header)); // initialize rest of block to 0
+
+  block_1->next = (struct header *)((char *)new_memory + 128);
+  block_1->next->size = 128;
+  char *start_2 = (char *)(block_1->next + 1);
+  memset(start_2, 1, block_1->next->size - sizeof(struct header));
+  block_1->next->next = NULL;
+
+  printf("first block:  %p\n", (void *)block_1);
+  printf("second block: %p\n", (void *)block_1->next);
+  printf("first_block size: %lu\n", block_1->size);
+  printf("first_block next: %p\n", (void *)block_1->next);
+  printf("second_block next:  %p\n", (void *)block_1->next->next);
+  printf("second block size: %lu\n", block_1->next->size);
+
+  // now print data in blocks
+  for (int i = 0; i < block_1->size - sizeof(struct header); i++) {
+    printf("%d\n", start_1[i]);
+  }
+  return 0;
+}

@@ -1,0 +1,13 @@
+#include <stdint.h>
+#include <stdio.h>
+#include <unistd.h>
+
+int main() {
+  struct header {
+    uint4_t size;
+    struct header *next;
+  };
+
+  void *new_memory = sbrk(256);
+  return 0;
+}

@@ -1,0 +1,21 @@
+#include <stdint.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <string.h>
+int main() {
+  struct header {
+    uint64_t size;
+    struct header *next;
+  };
+
+  // get 256 more bytes of memory
+  void *new_memory = sbrk(256);
+
+  // put the first block at the start of the new memory
+  struct header *block_1 = (struct header *)new_memory;
+  block_1->size = 128;
+  // set block to 0s
+  char *start_1 = (char *)(block_1 + 1); // move past header
+  memset(start_1, 0, block_1->size - sizeof(struct header));
+  return 0;
+}

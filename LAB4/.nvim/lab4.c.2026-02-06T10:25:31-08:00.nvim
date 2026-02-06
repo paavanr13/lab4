@@ -1,0 +1,7 @@
+#include <stdio.h>
+#include <unistd.h>
+
+int main() {
+  void *new_memory = sbrk(256);
+  return 0;
+}
